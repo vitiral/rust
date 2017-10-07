@@ -135,11 +135,10 @@ type Labels = HashSet<String>;
 
 /// Represents the requested configuration by rustc_clean/dirty
 enum Assertion {
+    /// Just assert items in `label="..."` are all clean
     CleanLabels(Labels),
+    /// Just assert items in `label="..."` are all dirty
     DirtyLabels(Labels),
-}
-
-impl Assertion {
 }
 
 pub fn check_dirty_clean_annotations<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>) {
@@ -255,25 +254,26 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         }
     }
 
+    /// Possibly "deserialize" the attribute into a clean/dirty assertion
     fn assertion_maybe(&self, attr: &Attribute) -> Option<Assertion> {
         let is_clean = if attr.check_name(ATTR_DIRTY) {
             false
         } else if attr.check_name(ATTR_CLEAN) {
             true
         } else {
-            // Not rustc_clean/dirty
+            // skip: not rustc_clean/dirty
             return None
         };
         if !check_config(self.tcx, attr) {
-            // Not the correct `cfg=`
+            // skip: not the correct `cfg=`
             return None;
         }
         if let Some(labels) = self.labels(attr) {
-            if is_clean {
-                Some(Assertion::CleanLabels(labels))
+            Some(if is_clean {
+                Assertion::CleanLabels(labels)
             } else {
-                Some(Assertion::DirtyLabels(labels))
-            }
+                Assertion::DirtyLabels(labels)
+            })
         } else {
             // FIXME(vitiral): add auto+except
             self.tcx.sess.span_fatal(attr.span, "no `label` found");
