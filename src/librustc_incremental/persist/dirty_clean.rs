@@ -39,9 +39,11 @@
 //! previous revision to compare things to.
 //!
 
+#![allow(dead_code)]
+
 use std::collections::HashSet;
 use std::vec::Vec;
-use rustc::dep_graph::DepNode;
+use rustc::dep_graph::{DepNode, label_strs};
 use rustc::hir;
 use rustc::hir::def_id::DefId;
 use rustc::hir::itemlikevisit::ItemLikeVisitor;
@@ -53,10 +55,89 @@ use rustc_data_structures::fx::{FxHashSet, FxHashMap};
 use syntax_pos::Span;
 use rustc::ty::TyCtxt;
 
+const EXCEPT: &'static str = "except";
 const LABEL: &'static str = "label";
 const CFG: &'static str = "cfg";
 
+// Free standing functions
+const LABELS_FN: [&'static str; 9] = [
+    // Hir and HirBody should be computed for all nodes
+    label_strs::Hir,
+    label_strs::HirBody,
+
+    // These represent executable code, so we want to test their MIR:
+    label_strs::MirValidated,
+    label_strs::MirOptimized,
+
+    // Callers will depend on the signature of these items, so we better test
+    label_strs::TypeOfItem,
+    label_strs::GenericsOfItem,
+    label_strs::PredicatesOfItem,
+    label_strs::FnSignature,
+
+    // And a big part of compilation (that we eventually want to cache) is type inference
+    // information:
+    label_strs::TypeckTables,
+];
+
+// FIXME(vitiral):
+// ### Methods
+//
+// methods are identical to functions, but add:
+//
+//     AssociatedItems
+//
+// ### Struct, Enum, and Union Definitions
+//
+// For these we should at least test
+//
+//     TypeOfItem,
+//     GenericsOfItem, and
+//     PredicatesOfItem.
+//
+// in addition to Hir and HirBody. Note that changing the type of a
+// field does not change the type of the struct or enum, but adding/removing
+// fields or changing a fields name or visibility does.
+// ### Struct/Enum/Unions Fields
+//
+// Fields are kind of separate from their containers, as they can change independently from them. We should at least check
+//
+//     TypeOfItem for these.
+//
+// ### Trait Definitions
+//
+// For these we'll want to check
+//
+//     TraitDefOfItem,
+//     TraitImpls,
+//     SpecializationGraph,
+//     ObjectSafety,
+//     AssociatedItemDefIds,
+//     GenericsOfItem, and
+//     PredicatesOfItem
+//
+// ### (Trait) Impls
+//
+// For impls we'll want to check
+//
+//     ImplTraitRef,
+//     AssociatedItemDefIds, and
+//     GenericsOfItem.
+//
+// ### Associated Items
+//
+// For associated items (types, constants, and methods) we should check
+//
+//     TraitOfItem,
+//     AssociatedItems.
+
 type Labels = HashSet<String>;
+
+/// Represents the requested configuration by rustc_clean/dirty
+enum Cfg {
+    CleanLabels(Labels),
+    DirtyLabels(Labels),
+}
 
 pub fn check_dirty_clean_annotations<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>) {
     // can't add `#[rustc_dirty]` etc without opting in to this feature
@@ -171,16 +252,22 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         }
     }
 
+    fn try_assert_labels_dirty(&mut self, attr: &Attribute, def_id: DefId, item_span: Span) -> bool {
+        let labels = self.labels(attr);
+        self.checked_attrs.insert(attr.id);
+        for dep_node in self.dep_nodes(&labels, def_id) {
+            self.assert_dirty(item_span, dep_node);
+        }
+        // FIXME: this needs to have actual logic
+        true
+    }
+
     fn check_item(&mut self, item_id: ast::NodeId, item_span: Span) {
         let def_id = self.tcx.hir.local_def_id(item_id);
         for attr in self.tcx.get_attrs(def_id).iter() {
             if attr.check_name(ATTR_DIRTY) {
                 if check_config(self.tcx, attr) {
-                    self.checked_attrs.insert(attr.id);
-                    let labels = self.labels(attr);
-                    for dep_node in self.dep_nodes(&labels, def_id) {
-                        self.assert_dirty(item_span, dep_node);
-                    }
+                    self.try_assert_labels_dirty(attr, def_id, item_span);
                 }
             } else if attr.check_name(ATTR_CLEAN) {
                 if check_config(self.tcx, attr) {
