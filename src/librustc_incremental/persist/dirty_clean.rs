@@ -58,20 +58,28 @@ use rustc_data_structures::fx::{FxHashSet, FxHashMap};
 use syntax_pos::Span;
 use rustc::ty::TyCtxt;
 
-const EXCEPT: &'static str = "except";
-const LABEL: &'static str = "label";
-const CFG: &'static str = "cfg";
+const EXCEPT: &str = "except";
+const LABEL: &str = "label";
+const CFG: &str = "cfg";
 
-// Free standing functions
-const LABELS_FN: [&'static str; 9] = [
+// Base and Extra labels to build up the labels
+
+/// DefNodes for Hir, which is pretty much everything
+const BASE_HIR: &[&str] = &[
     // Hir and HirBody should be computed for all nodes
     label_strs::Hir,
     label_strs::HirBody,
+];
 
-    // These represent executable code, so we want to test their MIR:
+/// DefNodes for MirValidated/Optimized, which is relevant in "executable"
+/// code, i.e. functions+methods
+const BASE_MIR: &[&str] = &[
     label_strs::MirValidated,
     label_strs::MirOptimized,
+];
 
+/// DefNodes for functions + methods
+const BASE_FN: &[&str] = &[
     // Callers will depend on the signature of these items, so we better test
     label_strs::TypeOfItem,
     label_strs::GenericsOfItem,
@@ -83,30 +91,59 @@ const LABELS_FN: [&'static str; 9] = [
     label_strs::TypeckTables,
 ];
 
-// FIXME(vitiral):
-// ### Methods
-//
-// methods are identical to functions, but add:
-//
-//     AssociatedItems
-//
-// ### Struct, Enum, and Union Definitions
-//
-// For these we should at least test
-//
-//     TypeOfItem,
-//     GenericsOfItem, and
-//     PredicatesOfItem.
-//
-// in addition to Hir and HirBody. Note that changing the type of a
-// field does not change the type of the struct or enum, but adding/removing
-// fields or changing a fields name or visibility does.
-// ### Struct/Enum/Unions Fields
+/// Struct, Enum and Union DefNodes
+///
+/// Note that changing the type of a field does not change the type of the struct or enum, but
+/// adding/removing fields or changing a fields name or visibility does.
+const BASE_STRUCT: &[&str] = &[
+    label_strs::TypeOfItem,
+    label_strs::GenericsOfItem,
+    label_strs::PredicatesOfItem,
+];
+
+/// For associated items (types, constants, and (FIXME: trait?) methods)
+///
+/// FIXME: why would a type/constant assert TraitOfItem?
+const BASE_ASSOCIATED: &[&str] = &[
+    label_strs::AssociatedItems,
+    label_strs::TraitOfItem,
+];
+
+/// Extra DefNodes for methods (as opposed to functions)
+const EXTRA_METHOD: &[&str] = &[
+    label_strs::AssociatedItems,
+];
+
+// Fully Built Labels
+
+/// Function DefNodes
+const LABELS_FN: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_MIR,
+    BASE_FN,
+];
+
+/// Method DefNodes
+const LABELS_METHOD: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_MIR,
+    BASE_FN,
+    EXTRA_METHOD,
+];
+
+/// Struct DefNodes
+const LABELS_STRUCT: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_STRUCT,
+];
+
+// FIXME: Struct/Enum/Unions Fields (there is currently no way to attach these)
 //
 // Fields are kind of separate from their containers, as they can change independently from them. We should at least check
 //
 //     TypeOfItem for these.
-//
+
+// FIXME: need to add these
 // ### Trait Definitions
 //
 // For these we'll want to check
@@ -129,7 +166,7 @@ const LABELS_FN: [&'static str; 9] = [
 //
 // ### Associated Items
 //
-// For associated items (types, constants, and methods) we should check
+// For associated items (types, constants, and trait-methods) we should check
 //
 //     TraitOfItem,
 //     AssociatedItems.
@@ -141,7 +178,6 @@ struct Assertion {
     clean: Labels,
     dirty: Labels,
 }
-
 
 impl Assertion {
     fn from_clean_labels(labels: Labels) -> Assertion {
@@ -288,7 +324,10 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
             },
             _ => panic!("clean/dirty auto-assertions not yet defined for {:?}", node),
         };
-        (name, Labels::from_iter(labels.iter().map(|l| l.to_string())))
+        let labels = Labels::from_iter(
+            labels.iter().flat_map(|s| s.iter().map(|l| l.to_string()))
+        );
+        (name, labels)
     }
 
     fn resolve_labels(&self, item: &NestedMetaItem, value: &str) -> Labels {
