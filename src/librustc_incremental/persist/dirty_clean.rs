@@ -134,9 +134,12 @@ const LABELS_FN: [&'static str; 9] = [
 type Labels = HashSet<String>;
 
 /// Represents the requested configuration by rustc_clean/dirty
-enum Cfg {
+enum Assertion {
     CleanLabels(Labels),
     DirtyLabels(Labels),
+}
+
+impl Assertion {
 }
 
 pub fn check_dirty_clean_annotations<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>) {
@@ -172,14 +175,14 @@ pub struct DirtyCleanVisitor<'a, 'tcx:'a> {
 }
 
 impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
-    fn labels(&self, attr: &Attribute) -> Labels {
+    fn labels(&self, attr: &Attribute) -> Option<Labels> {
         for item in attr.meta_item_list().unwrap_or_else(Vec::new) {
             if item.check_name(LABEL) {
                 let value = expect_associated_value(self.tcx, &item);
-                return self.resolve_labels(&item, value.as_str().as_ref());
+                return Some(self.resolve_labels(&item, value.as_str().as_ref()));
             }
         }
-        self.tcx.sess.span_fatal(attr.span, "no `label` found");
+        None
     }
 
     fn resolve_labels(&self, item: &NestedMetaItem, value: &str) -> Labels {
@@ -252,29 +255,48 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         }
     }
 
-    fn try_assert_labels_dirty(&mut self, attr: &Attribute, def_id: DefId, item_span: Span) -> bool {
-        let labels = self.labels(attr);
-        self.checked_attrs.insert(attr.id);
-        for dep_node in self.dep_nodes(&labels, def_id) {
-            self.assert_dirty(item_span, dep_node);
+    fn assertion_maybe(&self, attr: &Attribute) -> Option<Assertion> {
+        let is_clean = if attr.check_name(ATTR_DIRTY) {
+            false
+        } else if attr.check_name(ATTR_CLEAN) {
+            true
+        } else {
+            // Not rustc_clean/dirty
+            return None
+        };
+        if !check_config(self.tcx, attr) {
+            // Not the correct `cfg=`
+            return None;
         }
-        // FIXME: this needs to have actual logic
-        true
+        if let Some(labels) = self.labels(attr) {
+            if is_clean {
+                Some(Assertion::CleanLabels(labels))
+            } else {
+                Some(Assertion::DirtyLabels(labels))
+            }
+        } else {
+            // FIXME(vitiral): add auto+except
+            self.tcx.sess.span_fatal(attr.span, "no `label` found");
+        }
     }
 
     fn check_item(&mut self, item_id: ast::NodeId, item_span: Span) {
         let def_id = self.tcx.hir.local_def_id(item_id);
         for attr in self.tcx.get_attrs(def_id).iter() {
-            if attr.check_name(ATTR_DIRTY) {
-                if check_config(self.tcx, attr) {
-                    self.try_assert_labels_dirty(attr, def_id, item_span);
-                }
-            } else if attr.check_name(ATTR_CLEAN) {
-                if check_config(self.tcx, attr) {
-                    self.checked_attrs.insert(attr.id);
-                    let labels = self.labels(attr);
+            let assertion = match self.assertion_maybe(attr) {
+                Some(a) => a,
+                None => continue,
+            };
+            self.checked_attrs.insert(attr.id);
+            match assertion {
+                Assertion::CleanLabels(labels) => {
                     for dep_node in self.dep_nodes(&labels, def_id) {
                         self.assert_clean(item_span, dep_node);
+                    }
+                },
+                Assertion::DirtyLabels(labels) => {
+                    for dep_node in self.dep_nodes(&labels, def_id) {
+                        self.assert_dirty(item_span, dep_node);
                     }
                 }
             }
