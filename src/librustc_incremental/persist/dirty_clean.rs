@@ -42,9 +42,12 @@
 #![allow(dead_code)]
 
 use std::collections::HashSet;
+use std::iter::FromIterator;
 use std::vec::Vec;
 use rustc::dep_graph::{DepNode, label_strs};
 use rustc::hir;
+use rustc::hir::Item_ as HirItem;
+use rustc::hir::map::Node as HirNode;
 use rustc::hir::def_id::DefId;
 use rustc::hir::itemlikevisit::ItemLikeVisitor;
 use rustc::hir::intravisit;
@@ -134,11 +137,9 @@ const LABELS_FN: [&'static str; 9] = [
 type Labels = HashSet<String>;
 
 /// Represents the requested configuration by rustc_clean/dirty
-enum Assertion {
-    /// Just assert items in `label="..."` are all clean
-    CleanLabels(Labels),
-    /// Just assert items in `label="..."` are all dirty
-    DirtyLabels(Labels),
+struct Assertion {
+    clean: Labels,
+    dirty: Labels,
 }
 
 pub fn check_dirty_clean_annotations<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>) {
@@ -174,6 +175,62 @@ pub struct DirtyCleanVisitor<'a, 'tcx:'a> {
 }
 
 impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
+    /// Possibly "deserialize" the attribute into a clean/dirty assertion
+    fn assertion_maybe(&mut self, item_id: ast::NodeId, attr: &Attribute)
+        -> Option<Assertion>
+    {
+        let is_clean = if attr.check_name(ATTR_DIRTY) {
+            false
+        } else if attr.check_name(ATTR_CLEAN) {
+            true
+        } else {
+            // skip: not rustc_clean/dirty
+            return None
+        };
+        if !check_config(self.tcx, attr) {
+            // skip: not the correct `cfg=`
+            return None;
+        }
+        let assertion = if let Some(labels) = self.labels(attr) {
+            if is_clean {
+                Assertion {
+                    clean: labels,
+                    dirty: Labels::new(),
+                }
+            } else {
+                Assertion {
+                    clean: Labels::new(),
+                    dirty: labels,
+                }
+            }
+        } else {
+            let (name, mut auto) = self.default_labels(item_id);
+            let except = self.except(attr);
+            for e in except.iter() {
+                if !auto.remove(e) {
+                    let msg = format!(
+                        "`except` specified DefNode that can not be affected for \"{}\": \"{}\"",
+                        name,
+                        e
+                    );
+                    self.tcx.sess.span_fatal(attr.span, &msg);
+                }
+            }
+            if is_clean {
+                Assertion {
+                    clean: auto,
+                    dirty: except,
+                }
+            } else {
+                Assertion {
+                    clean: except,
+                    dirty: auto,
+                }
+            }
+        };
+        Some(assertion)
+    }
+
     fn labels(&self, attr: &Attribute) -> Option<Labels> {
         for item in attr.meta_item_list().unwrap_or_else(Vec::new) {
             if item.check_name(LABEL) {
@@ -182,6 +239,37 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
             }
         }
         None
+    }
+
+    /// `except=` attribute value
+    fn except(&self, attr: &Attribute) -> Labels {
+        for item in attr.meta_item_list().unwrap_or_else(Vec::new) {
+            if item.check_name(EXCEPT) {
+                let value = expect_associated_value(self.tcx, &item);
+                return self.resolve_labels(&item, value.as_str().as_ref());
+            }
+        }
+        // if no `label` or `except` is given, only the node's group are asserted
+        Labels::new()
+    }
+
+    /// Return all DepNode labels that should be asserted for this item.
+    /// index=0 is the "name" used for error messages
+    fn default_labels(&mut self, item_id: ast::NodeId) -> (&'static str, Labels) {
+        let node = self.tcx.hir.get(item_id);
+        let (name, labels) = match node {
+            HirNode::NodeItem(item) => {
+                match item.node {
+                    HirItem::ItemFn(..) => ("ItemFn", &LABELS_FN),
+                    _ => panic!(
+                        "clean/dirty auto-assertions not yet defined for NodeItem.node={:?}",
+                        item.node
+                    ),
+                }
+            },
+            _ => panic!("clean/dirty auto-assertions not yet defined for {:?}", node),
+        };
+        (name, Labels::from_iter(labels.iter().map(|l| l.to_string())))
     }
 
     fn resolve_labels(&self, item: &NestedMetaItem, value: &str) -> Labels {
@@ -254,51 +342,19 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         }
     }
 
-    /// Possibly "deserialize" the attribute into a clean/dirty assertion
-    fn assertion_maybe(&self, attr: &Attribute) -> Option<Assertion> {
-        let is_clean = if attr.check_name(ATTR_DIRTY) {
-            false
-        } else if attr.check_name(ATTR_CLEAN) {
-            true
-        } else {
-            // skip: not rustc_clean/dirty
-            return None
-        };
-        if !check_config(self.tcx, attr) {
-            // skip: not the correct `cfg=`
-            return None;
-        }
-        if let Some(labels) = self.labels(attr) {
-            Some(if is_clean {
-                Assertion::CleanLabels(labels)
-            } else {
-                Assertion::DirtyLabels(labels)
-            })
-        } else {
-            // FIXME(vitiral): add auto+except
-            self.tcx.sess.span_fatal(attr.span, "no `label` found");
-        }
-    }
-
     fn check_item(&mut self, item_id: ast::NodeId, item_span: Span) {
         let def_id = self.tcx.hir.local_def_id(item_id);
         for attr in self.tcx.get_attrs(def_id).iter() {
-            let assertion = match self.assertion_maybe(attr) {
+            let assertion = match self.assertion_maybe(item_id, attr) {
                 Some(a) => a,
                 None => continue,
             };
             self.checked_attrs.insert(attr.id);
-            match assertion {
-                Assertion::CleanLabels(labels) => {
-                    for dep_node in self.dep_nodes(&labels, def_id) {
-                        self.assert_clean(item_span, dep_node);
-                    }
-                },
-                Assertion::DirtyLabels(labels) => {
-                    for dep_node in self.dep_nodes(&labels, def_id) {
-                        self.assert_dirty(item_span, dep_node);
-                    }
-                }
+            for dep_node in self.dep_nodes(&assertion.clean, def_id) {
+                self.assert_clean(item_span, dep_node);
+            }
+            for dep_node in self.dep_nodes(&assertion.dirty, def_id) {
+                self.assert_dirty(item_span, dep_node);
             }
         }
     }
