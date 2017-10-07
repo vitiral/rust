@@ -142,6 +142,23 @@ struct Assertion {
     dirty: Labels,
 }
 
+
+impl Assertion {
+    fn from_clean_labels(labels: Labels) -> Assertion {
+        Assertion {
+            clean: labels,
+            dirty: Labels::new(),
+        }
+    }
+
+    fn from_dirty_labels(labels: Labels) -> Assertion {
+        Assertion {
+            clean: Labels::new(),
+            dirty: labels,
+        }
+    }
+}
+
 pub fn check_dirty_clean_annotations<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>) {
     // can't add `#[rustc_dirty]` etc without opting in to this feature
     if !tcx.sess.features.borrow().rustc_attrs {
@@ -175,6 +192,7 @@ pub struct DirtyCleanVisitor<'a, 'tcx:'a> {
 }
 
 impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
+
     /// Possibly "deserialize" the attribute into a clean/dirty assertion
     fn assertion_maybe(&mut self, item_id: ast::NodeId, attr: &Attribute)
         -> Option<Assertion>
@@ -193,42 +211,43 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         }
         let assertion = if let Some(labels) = self.labels(attr) {
             if is_clean {
-                Assertion {
-                    clean: labels,
-                    dirty: Labels::new(),
-                }
+                Assertion::from_clean_labels(labels)
             } else {
-                Assertion {
-                    clean: Labels::new(),
-                    dirty: labels,
-                }
+                Assertion::from_dirty_labels(labels)
             }
         } else {
-            let (name, mut auto) = self.default_labels(item_id);
-            let except = self.except(attr);
-            for e in except.iter() {
-                if !auto.remove(e) {
-                    let msg = format!(
-                        "`except` specified DefNode that can not be affected for \"{}\": \"{}\"",
-                        name,
-                        e
-                    );
-                    self.tcx.sess.span_fatal(attr.span, &msg);
-                }
-            }
-            if is_clean {
-                Assertion {
-                    clean: auto,
-                    dirty: except,
-                }
-            } else {
-                Assertion {
-                    clean: except,
-                    dirty: auto,
-                }
-            }
+            self.assertion_auto(item_id, attr, is_clean)
         };
         Some(assertion)
+    }
+
+    /// Get the "auto" assertion on pre-validated attr, along with the `except` labels
+    fn assertion_auto(&mut self, item_id: ast::NodeId, attr: &Attribute, is_clean: bool)
+        -> Assertion
+    {
+        let (name, mut auto) = self.auto_labels(item_id);
+        let except = self.except(attr);
+        for e in except.iter() {
+            if !auto.remove(e) {
+                let msg = format!(
+                    "`except` specified DefNode that can not be affected for \"{}\": \"{}\"",
+                    name,
+                    e
+                );
+                self.tcx.sess.span_fatal(attr.span, &msg);
+            }
+        }
+        if is_clean {
+            Assertion {
+                clean: auto,
+                dirty: except,
+            }
+        } else {
+            Assertion {
+                clean: except,
+                dirty: auto,
+            }
+        }
     }
 
     fn labels(&self, attr: &Attribute) -> Option<Labels> {
@@ -255,7 +274,7 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
 
     /// Return all DepNode labels that should be asserted for this item.
     /// index=0 is the "name" used for error messages
-    fn default_labels(&mut self, item_id: ast::NodeId) -> (&'static str, Labels) {
+    fn auto_labels(&mut self, item_id: ast::NodeId) -> (&'static str, Labels) {
         let node = self.tcx.hir.get(item_id);
         let (name, labels) = match node {
             HirNode::NodeItem(item) => {
@@ -528,21 +547,42 @@ impl<'a, 'tcx, 'm> DirtyCleanMetadataVisitor<'a, 'tcx, 'm> {
 /// Given a `#[rustc_dirty]` or `#[rustc_clean]` attribute, scan
 /// for a `cfg="foo"` attribute and check whether we have a cfg
 /// flag called `foo`.
+///
+/// Also make sure that the `label` and `except` fields do not
+/// both exist.
 fn check_config(tcx: TyCtxt, attr: &Attribute) -> bool {
     debug!("check_config(attr={:?})", attr);
     let config = &tcx.sess.parse_sess.config;
     debug!("check_config: config={:?}", config);
+    let (mut cfg, mut except, mut label) = (None, false, false);
     for item in attr.meta_item_list().unwrap_or_else(Vec::new) {
         if item.check_name(CFG) {
             let value = expect_associated_value(tcx, &item);
             debug!("check_config: searching for cfg {:?}", value);
-            return config.contains(&(value, None));
+            cfg = Some(config.contains(&(value, None)));
+        }
+        if item.check_name(LABEL) {
+            label = true;
+        }
+        if item.check_name(EXCEPT) {
+            except = true;
         }
     }
 
-    tcx.sess.span_fatal(
-        attr.span,
-        "no cfg attribute");
+    if label && except {
+        tcx.sess.span_fatal(
+            attr.span,
+            "must specify only one of: `label`, `except`"
+        );
+    }
+
+    match cfg {
+        None => tcx.sess.span_fatal(
+            attr.span,
+            "no cfg attribute"
+        ),
+        Some(c) => c,
+    }
 }
 
 fn expect_associated_value(tcx: TyCtxt, item: &NestedMetaItem) -> ast::Name {
