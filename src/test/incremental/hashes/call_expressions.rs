@@ -171,11 +171,11 @@ pub fn change_to_ufcs() {
     s.method1('x', true);
 }
 
+// FIXME(vitiral): why would this change anything, doesn't the Mir/Hir expand this
+// sort of stuff?
 #[cfg(not(cfail1))]
-#[rustc_clean(label="Hir", cfg="cfail2")]
-#[rustc_clean(label="Hir", cfg="cfail3")]
-#[rustc_dirty(label="HirBody", cfg="cfail2")]
-#[rustc_clean(label="HirBody", cfg="cfail3")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirValidated,MirOptimized,TypeckTables")]
+#[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 pub fn change_to_ufcs() {
