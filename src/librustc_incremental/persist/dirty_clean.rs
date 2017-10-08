@@ -139,7 +139,8 @@ const LABELS_STRUCT: &[&[&str]] = &[
 
 // FIXME: Struct/Enum/Unions Fields (there is currently no way to attach these)
 //
-// Fields are kind of separate from their containers, as they can change independently from them. We should at least check
+// Fields are kind of separate from their containers, as they can change independently from
+// them. We should at least check
 //
 //     TypeOfItem for these.
 
