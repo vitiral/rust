@@ -86,10 +86,10 @@ const BASE_CONST: &[&str] = &[
 /// DepNodes for functions + methods
 const BASE_FN: &[&str] = &[
     // Callers will depend on the signature of these items, so we better test
-    label_strs::TypeOfItem,
+    label_strs::FnSignature,
     label_strs::GenericsOfItem,
     label_strs::PredicatesOfItem,
-    label_strs::FnSignature,
+    label_strs::TypeOfItem,
 
     // And a big part of compilation (that we eventually want to cache) is type inference
     // information:
@@ -105,17 +105,17 @@ const BASE_HIR: &[&str] = &[
 
 /// `impl` implementation of struct/trait
 const BASE_IMPL: &[&str] = &[
-    label_strs::ImplTraitRef,
     label_strs::AssociatedItemDefIds,
     label_strs::GenericsOfItem,
+    label_strs::ImplTraitRef,
 ];
 
 
 /// DepNodes for MirValidated/Optimized, which is relevant in "executable"
 /// code, i.e. functions+methods
 const BASE_MIR: &[&str] = &[
-    label_strs::MirValidated,
     label_strs::MirOptimized,
+    label_strs::MirValidated,
 ];
 
 /// Struct, Enum and Union DepNodes
@@ -123,20 +123,20 @@ const BASE_MIR: &[&str] = &[
 /// Note that changing the type of a field does not change the type of the struct or enum, but
 /// adding/removing fields or changing a fields name or visibility does.
 const BASE_STRUCT: &[&str] = &[
-    label_strs::TypeOfItem,
     label_strs::GenericsOfItem,
     label_strs::PredicatesOfItem,
+    label_strs::TypeOfItem,
 ];
 
-/// Trait definitions
+/// Trait Definition DepNodes
 const BASE_TRAIT_DEF: &[&str] = &[
-    label_strs::TraitDefOfItem,
-    label_strs::TraitImpls,
-    label_strs::SpecializationGraph,
-    label_strs::ObjectSafety,
     label_strs::AssociatedItemDefIds,
     label_strs::GenericsOfItem,
+    label_strs::ObjectSafety,
     label_strs::PredicatesOfItem,
+    label_strs::SpecializationGraph,
+    label_strs::TraitDefOfItem,
+    label_strs::TraitImpls,
 ];
 
 const EXTRA_TRAIT: &[&str] = &[
@@ -202,7 +202,7 @@ const LABELS_STRUCT: &[&[&str]] = &[
 ];
 
 /// Trait Definition DepNodes
-const LABELS_TRAIT_DEF: &[&[&str]] = &[
+const LABELS_TRAIT: &[&[&str]] = &[
     BASE_HIR,
     BASE_TRAIT_DEF,
 ];
@@ -387,7 +387,7 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     /// A union definition, e.g. `union Foo<A, B> {x: A, y: B}`
                     HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
                     /// Represents a Trait Declaration
-                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT_DEF),
+                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
                     /// `impl Trait for .. {}`
                     HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
                     /// An implementation, eg `impl<A> Trait for Foo { .. }`
@@ -414,7 +414,6 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     ImplItemKind::Method(..) => ("NodeImplItem", &LABELS_FN_ASSOCIATED),
                     ImplItemKind::Const(..) => ("NodeImplConst", &LABELS_CONST_ASSOCIATED),
                     ImplItemKind::Type(..) => ("NodeImplType", &LABELS_CONST_ASSOCIATED),
-
                 }
             },
             _ => self.tcx.sess.span_fatal(
