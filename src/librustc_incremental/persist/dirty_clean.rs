@@ -103,11 +103,6 @@ const EXTRA_METHOD: &[&str] = &[
     label_strs::AssociatedItems,
 ];
 
-/// extra DepNodes for trait-methods (+method+fn)
-const EXTRA_TRAIT_METHOD: &[&str] = &[
-    label_strs::TraitOfItem,
-];
-
 /// Struct, Enum and Union DepNodes
 ///
 /// Note that changing the type of a field does not change the type of the struct or enum, but
@@ -128,7 +123,7 @@ const BASE_CONST: &[&str] = &[
 ];
 
 /// Trait definitions
-const BASE_TRAIT: &[&str] = &[
+const BASE_TRAIT_DEF: &[&str] = &[
     label_strs::TraitDefOfItem,
     label_strs::TraitImpls,
     label_strs::SpecializationGraph,
@@ -136,6 +131,10 @@ const BASE_TRAIT: &[&str] = &[
     label_strs::AssociatedItemDefIds,
     label_strs::GenericsOfItem,
     label_strs::PredicatesOfItem,
+];
+
+const EXTRA_TRAIT: &[&str] = &[
+    label_strs::TraitOfItem,
 ];
 
 /// `impl` implementation of struct/trait
@@ -162,21 +161,6 @@ const LABELS_METHOD: &[&[&str]] = &[
     EXTRA_METHOD,
 ];
 
-/// Trait-Method DepNodes
-const LABELS_TRAIT_METHOD: &[&[&str]] = &[
-    BASE_HIR,
-    BASE_MIR,
-    BASE_FN,
-    EXTRA_METHOD,
-    EXTRA_TRAIT_METHOD,
-];
-
-/// Trait DepNodes
-const LABELS_TRAIT: &[&[&str]] = &[
-    BASE_HIR,
-    BASE_TRAIT,
-];
-
 /// Impl DepNodes
 const LABELS_IMPL: &[&[&str]] = &[
     BASE_HIR,
@@ -193,6 +177,29 @@ const LABELS_CONST: &[&[&str]] = &[
     BASE_HIR,
     BASE_CONST,
 ];
+
+/// Trait-Const/Typedef DepNodes
+const LABELS_TRAIT_CONST: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_CONST,
+    EXTRA_TRAIT,
+];
+
+/// Trait-Method DepNodes
+const LABELS_TRAIT_METHOD: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_MIR,
+    BASE_FN,
+    EXTRA_METHOD,
+    EXTRA_TRAIT,
+];
+
+/// Trait DepNodes
+const LABELS_TRAIT_DEF: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_TRAIT_DEF,
+];
+
 
 // FIXME: Struct/Enum/Unions Fields (there is currently no way to attach these)
 //
@@ -388,7 +395,13 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     ),
                 }
             },
-            HirNode::NodeTraitItem(..) => ("NodeTraitItem", &LABELS_TRAIT_METHOD),
+            HirNode::NodeTraitItem(item) => {
+                match item.node {
+                    TraitItemKind::Method(..) => ("NodeTraitItem", &LABELS_TRAIT_METHOD),
+                    TraitItemKind::Const(..) => ("NodeTraitConst", &LABELS_TRAIT_METHOD),
+                    TraitItemKind::Type(..) => ("NodeTraitConst", &LABELS_TRAIT_METHOD),
+                }
+            },
             HirNode::NodeImplItem(..) => ("NodeImplItem", &LABELS_METHOD),
             _ => self.tcx.sess.span_fatal(
                 attr.span,
