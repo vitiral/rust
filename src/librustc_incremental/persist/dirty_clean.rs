@@ -46,7 +46,7 @@ use std::iter::FromIterator;
 use std::vec::Vec;
 use rustc::dep_graph::{DepNode, label_strs};
 use rustc::hir;
-use rustc::hir::Item_ as HirItem;
+use rustc::hir::{Item_ as HirItem, ImplItemKind, TraitItemKind},
 use rustc::hir::map::Node as HirNode;
 use rustc::hir::def_id::DefId;
 use rustc::hir::itemlikevisit::ItemLikeVisitor;
