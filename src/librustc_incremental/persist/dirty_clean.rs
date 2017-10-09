@@ -58,23 +58,23 @@ use rustc_data_structures::fx::{FxHashSet, FxHashMap};
 use syntax_pos::Span;
 use rustc::ty::TyCtxt;
 
+// FIXME: validate with
+//  X - enum_constructors.rs
+//  inherent_impls.rs
+//  statics.rs
+//  struct_constructors.rs
+//  trait_defs.rs
+//  trait_impls.rs
+//  type_defs.rs
+//
+//  # Waiting on stuff..
+//  - extern_mods.rs
+
 const EXCEPT: &str = "except";
 const LABEL: &str = "label";
 const CFG: &str = "cfg";
 
 // Base and Extra labels to build up the labels
-//
-// FIXME(vitiral): still missing
-// - mod declaration
-// - external crate
-// - external trait
-// - foreign (external?) item
-// - global asm
-
-/// extra DepNodes for methods (+fn)
-const EXTRA_ASSOCIATED: &[&str] = &[
-    label_strs::AssociatedItems,
-];
 
 /// For typedef, constants, and statics
 const BASE_CONST: &[&str] = &[
@@ -134,6 +134,11 @@ const BASE_TRAIT_DEF: &[&str] = &[
     label_strs::SpecializationGraph,
     label_strs::TraitDefOfItem,
     label_strs::TraitImpls,
+];
+
+/// extra DepNodes for methods (+fn)
+const EXTRA_ASSOCIATED: &[&str] = &[
+    label_strs::AssociatedItems,
 ];
 
 const EXTRA_TRAIT: &[&str] = &[
