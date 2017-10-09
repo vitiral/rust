@@ -63,6 +63,13 @@ const LABEL: &str = "label";
 const CFG: &str = "cfg";
 
 // Base and Extra labels to build up the labels
+//
+// FIXME(vitiral): still missing
+// - mod declaration
+// - external crate
+// - external trait
+// - foreign (external?) item
+// - global asm
 
 /// DepNodes for Hir, which is pretty much everything
 const BASE_HIR: &[&str] = &[
@@ -91,6 +98,16 @@ const BASE_FN: &[&str] = &[
     label_strs::TypeckTables,
 ];
 
+/// extra DepNodes for methods (+fn)
+const EXTRA_METHOD: &[&str] = &[
+    label_strs::AssociatedItems,
+];
+
+/// extra DepNodes for trait-methods (+method+fn)
+const EXTRA_TRAIT_METHOD: &[&str] = &[
+    label_strs::TraitOfItem,
+];
+
 /// Struct, Enum and Union DepNodes
 ///
 /// Note that changing the type of a field does not change the type of the struct or enum, but
@@ -102,15 +119,30 @@ const BASE_STRUCT: &[&str] = &[
 ];
 
 /// For typedef, constants, and statics
+///
+/// FIXME: question -- I split const/trait-method up and added TypeOfItem to these
 const BASE_CONST: &[&str] = &[
     label_strs::TypeOfItem,
     label_strs::AssociatedItems,
     label_strs::TraitOfItem,
 ];
 
-/// Extra DepNodes for methods (as opposed to functions)
-const EXTRA_METHOD: &[&str] = &[
-    label_strs::AssociatedItems,
+/// Trait definitions
+const BASE_TRAIT: &[&str] = &[
+    label_strs::TraitDefOfItem,
+    label_strs::TraitImpls,
+    label_strs::SpecializationGraph,
+    label_strs::ObjectSafety,
+    label_strs::AssociatedItemDefIds,
+    label_strs::GenericsOfItem,
+    label_strs::PredicatesOfItem,
+];
+
+/// `impl` implementation of struct/trait
+const BASE_IMPL: &[&str] = &[
+    label_strs::ImplTraitRef,
+    label_strs::AssociatedItemDefIds,
+    label_strs::GenericsOfItem,
 ];
 
 // Fully Built Labels
@@ -130,6 +162,27 @@ const LABELS_METHOD: &[&[&str]] = &[
     EXTRA_METHOD,
 ];
 
+/// Trait-Method DepNodes
+const LABELS_TRAIT_METHOD: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_MIR,
+    BASE_FN,
+    EXTRA_METHOD,
+    EXTRA_TRAIT_METHOD,
+];
+
+/// Trait DepNodes
+const LABELS_TRAIT: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_TRAIT,
+];
+
+/// Impl DepNodes
+const LABELS_IMPL: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_IMPL,
+];
+
 /// Struct DepNodes
 const LABELS_STRUCT: &[&[&str]] = &[
     BASE_HIR,
@@ -147,34 +200,6 @@ const LABELS_CONST: &[&[&str]] = &[
 // them. We should at least check
 //
 //     TypeOfItem for these.
-
-// FIXME: need to add these
-// ### Trait Definitions
-//
-// For these we'll want to check
-//
-//     TraitDefOfItem,
-//     TraitImpls,
-//     SpecializationGraph,
-//     ObjectSafety,
-//     AssociatedItemDefIds,
-//     GenericsOfItem, and
-//     PredicatesOfItem
-//
-// ### (Trait) Impls
-//
-// For impls we'll want to check
-//
-//     ImplTraitRef,
-//     AssociatedItemDefIds, and
-//     GenericsOfItem.
-//
-// ### Associated Items
-//
-// For associated items (types, constants, and trait-methods) we should check
-//
-//     TraitOfItem,
-//     AssociatedItems.
 
 type Labels = HashSet<String>;
 
@@ -320,17 +345,39 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         let (name, labels) = match node {
             HirNode::NodeItem(item) => {
                 match item.node {
-                    HirItem::ItemFn(..) => ("ItemFn", &LABELS_FN),
+                    // note: these are in the same order as hir::Item_;
+                    // FIXME(vitiral): do commented out ones
 
-                    // constants + statics + types
+                    /// An `extern crate` item, with optional original crate name,
+                    // HirItem::ItemExternCrate(..),
+                    /// `use foo::bar::*;` or `use foo::bar::baz as quux;`
+                    // HirItem::ItemUse(..),
+                    /// A `static` item
                     HirItem::ItemStatic(..) => ("ItemStatic", &LABELS_CONST),
+                    /// A `const` item
                     HirItem::ItemConst(..) => ("ItemConst", &LABELS_CONST),
+                    /// A function declaration (FIXME: standalone, impl and trait-impl??)
+                    HirItem::ItemFn(..) => ("ItemFn", &LABELS_FN),
+                    /// A module
+                    // HirItem::ItemMod(..),
+                    /// An external module
+                    //HirItem::ItemForeignMod(..),
+                    /// Module-level inline assembly (from global_asm!)
+                    //HirItem::ItemGlobalAsm(..),
+                    /// A type alias, e.g. `type Foo = Bar<u8>`
                     HirItem::ItemTy(..) => ("ItemTy", &LABELS_CONST),
-
-                    // enum/union + struct
+                    /// An enum definition, e.g. `enum Foo<A, B> {C<A>, D<B>}`
                     HirItem::ItemEnum(..) => ("ItemEnum", &LABELS_STRUCT),
+                    /// A struct definition, e.g. `struct Foo<A> {x: A}`
                     HirItem::ItemStruct(..) => ("ItemStruct", &LABELS_STRUCT),
+                    /// A union definition, e.g. `union Foo<A, B> {x: A, y: B}`
                     HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
+                    /// Represents a Trait Declaration
+                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
+                    /// `impl Trait for .. {}`
+                    HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
+                    /// An implementation, eg `impl<A> Trait for Foo { .. }`
+                    HirItem::ItemImpl(..) => ("ItemImpl", &LABELS_IMPL),
 
                     _ => self.tcx.sess.span_fatal(
                         attr.span,
@@ -341,6 +388,8 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     ),
                 }
             },
+            HirNode::NodeTraitItem(..) => ("NodeTraitItem", &LABELS_TRAIT_METHOD),
+            HirNode::NodeImplItem(..) => ("NodeImplItem", &LABELS_METHOD),
             _ => self.tcx.sess.span_fatal(
                 attr.span,
                 &format!(
