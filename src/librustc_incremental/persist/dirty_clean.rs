@@ -64,21 +64,21 @@ const CFG: &str = "cfg";
 
 // Base and Extra labels to build up the labels
 
-/// DefNodes for Hir, which is pretty much everything
+/// DepNodes for Hir, which is pretty much everything
 const BASE_HIR: &[&str] = &[
     // Hir and HirBody should be computed for all nodes
     label_strs::Hir,
     label_strs::HirBody,
 ];
 
-/// DefNodes for MirValidated/Optimized, which is relevant in "executable"
+/// DepNodes for MirValidated/Optimized, which is relevant in "executable"
 /// code, i.e. functions+methods
 const BASE_MIR: &[&str] = &[
     label_strs::MirValidated,
     label_strs::MirOptimized,
 ];
 
-/// DefNodes for functions + methods
+/// DepNodes for functions + methods
 const BASE_FN: &[&str] = &[
     // Callers will depend on the signature of these items, so we better test
     label_strs::TypeOfItem,
@@ -91,7 +91,7 @@ const BASE_FN: &[&str] = &[
     label_strs::TypeckTables,
 ];
 
-/// Struct, Enum and Union DefNodes
+/// Struct, Enum and Union DepNodes
 ///
 /// Note that changing the type of a field does not change the type of the struct or enum, but
 /// adding/removing fields or changing a fields name or visibility does.
@@ -101,29 +101,28 @@ const BASE_STRUCT: &[&str] = &[
     label_strs::PredicatesOfItem,
 ];
 
-/// For associated items (types, constants, and (FIXME: trait?) methods)
-///
-/// FIXME: why would a type/constant assert TraitOfItem?
-const BASE_ASSOCIATED: &[&str] = &[
+/// For typedef, constants, and statics
+const BASE_CONST: &[&str] = &[
+    label_strs::TypeOfItem,
     label_strs::AssociatedItems,
     label_strs::TraitOfItem,
 ];
 
-/// Extra DefNodes for methods (as opposed to functions)
+/// Extra DepNodes for methods (as opposed to functions)
 const EXTRA_METHOD: &[&str] = &[
     label_strs::AssociatedItems,
 ];
 
 // Fully Built Labels
 
-/// Function DefNodes
+/// Function DepNode
 const LABELS_FN: &[&[&str]] = &[
     BASE_HIR,
     BASE_MIR,
     BASE_FN,
 ];
 
-/// Method DefNodes
+/// Method DepNodes
 const LABELS_METHOD: &[&[&str]] = &[
     BASE_HIR,
     BASE_MIR,
@@ -131,10 +130,15 @@ const LABELS_METHOD: &[&[&str]] = &[
     EXTRA_METHOD,
 ];
 
-/// Struct DefNodes
+/// Struct DepNodes
 const LABELS_STRUCT: &[&[&str]] = &[
     BASE_HIR,
     BASE_STRUCT,
+];
+
+const LABELS_CONST: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_CONST,
 ];
 
 // FIXME: Struct/Enum/Unions Fields (there is currently no way to attach these)
@@ -262,12 +266,12 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
     fn assertion_auto(&mut self, item_id: ast::NodeId, attr: &Attribute, is_clean: bool)
         -> Assertion
     {
-        let (name, mut auto) = self.auto_labels(item_id);
+        let (name, mut auto) = self.auto_labels(item_id, attr);
         let except = self.except(attr);
         for e in except.iter() {
             if !auto.remove(e) {
                 let msg = format!(
-                    "`except` specified DefNode that can not be affected for \"{}\": \"{}\"",
+                    "`except` specified DepNodes that can not be affected for \"{}\": \"{}\"",
                     name,
                     e
                 );
@@ -311,19 +315,39 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
 
     /// Return all DepNode labels that should be asserted for this item.
     /// index=0 is the "name" used for error messages
-    fn auto_labels(&mut self, item_id: ast::NodeId) -> (&'static str, Labels) {
+    fn auto_labels(&mut self, item_id: ast::NodeId, attr: &Attribute) -> (&'static str, Labels) {
         let node = self.tcx.hir.get(item_id);
         let (name, labels) = match node {
             HirNode::NodeItem(item) => {
                 match item.node {
                     HirItem::ItemFn(..) => ("ItemFn", &LABELS_FN),
-                    _ => panic!(
-                        "clean/dirty auto-assertions not yet defined for NodeItem.node={:?}",
-                        item.node
+
+                    // constants + statics + types
+                    HirItem::ItemStatic(..) => ("ItemStatic", &LABELS_CONST),
+                    HirItem::ItemConst(..) => ("ItemConst", &LABELS_CONST),
+                    HirItem::ItemTy(..) => ("ItemTy", &LABELS_CONST),
+
+                    // enum/union + struct
+                    HirItem::ItemEnum(..) => ("ItemEnum", &LABELS_STRUCT),
+                    HirItem::ItemStruct(..) => ("ItemStruct", &LABELS_STRUCT),
+                    HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
+
+                    _ => self.tcx.sess.span_fatal(
+                        attr.span,
+                        &format!(
+                            "clean/dirty auto-assertions not yet defined for NodeItem.node={:?}",
+                            item.node
+                        )
                     ),
                 }
             },
-            _ => panic!("clean/dirty auto-assertions not yet defined for {:?}", node),
+            _ => self.tcx.sess.span_fatal(
+                attr.span,
+                &format!(
+                    "clean/dirty auto-assertions not yet defined for {:?}",
+                    node
+                )
+            ),
         };
         let labels = Labels::from_iter(
             labels.iter().flat_map(|s| s.iter().map(|l| l.to_string()))
