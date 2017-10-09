@@ -71,18 +71,16 @@ const CFG: &str = "cfg";
 // - foreign (external?) item
 // - global asm
 
-/// DepNodes for Hir, which is pretty much everything
-const BASE_HIR: &[&str] = &[
-    // Hir and HirBody should be computed for all nodes
-    label_strs::Hir,
-    label_strs::HirBody,
+/// extra DepNodes for methods (+fn)
+const EXTRA_ASSOCIATED: &[&str] = &[
+    label_strs::AssociatedItems,
 ];
 
-/// DepNodes for MirValidated/Optimized, which is relevant in "executable"
-/// code, i.e. functions+methods
-const BASE_MIR: &[&str] = &[
-    label_strs::MirValidated,
-    label_strs::MirOptimized,
+/// For typedef, constants, and statics
+///
+/// FIXME: question -- I split const/trait-method up and added TypeOfItem to these
+const BASE_CONST: &[&str] = &[
+    label_strs::TypeOfItem,
 ];
 
 /// DepNodes for functions + methods
@@ -98,9 +96,26 @@ const BASE_FN: &[&str] = &[
     label_strs::TypeckTables,
 ];
 
-/// extra DepNodes for methods (+fn)
-const EXTRA_METHOD: &[&str] = &[
-    label_strs::AssociatedItems,
+/// DepNodes for Hir, which is pretty much everything
+const BASE_HIR: &[&str] = &[
+    // Hir and HirBody should be computed for all nodes
+    label_strs::Hir,
+    label_strs::HirBody,
+];
+
+/// `impl` implementation of struct/trait
+const BASE_IMPL: &[&str] = &[
+    label_strs::ImplTraitRef,
+    label_strs::AssociatedItemDefIds,
+    label_strs::GenericsOfItem,
+];
+
+
+/// DepNodes for MirValidated/Optimized, which is relevant in "executable"
+/// code, i.e. functions+methods
+const BASE_MIR: &[&str] = &[
+    label_strs::MirValidated,
+    label_strs::MirOptimized,
 ];
 
 /// Struct, Enum and Union DepNodes
@@ -111,15 +126,6 @@ const BASE_STRUCT: &[&str] = &[
     label_strs::TypeOfItem,
     label_strs::GenericsOfItem,
     label_strs::PredicatesOfItem,
-];
-
-/// For typedef, constants, and statics
-///
-/// FIXME: question -- I split const/trait-method up and added TypeOfItem to these
-const BASE_CONST: &[&str] = &[
-    label_strs::TypeOfItem,
-    label_strs::AssociatedItems,
-    label_strs::TraitOfItem,
 ];
 
 /// Trait definitions
@@ -137,14 +143,27 @@ const EXTRA_TRAIT: &[&str] = &[
     label_strs::TraitOfItem,
 ];
 
-/// `impl` implementation of struct/trait
-const BASE_IMPL: &[&str] = &[
-    label_strs::ImplTraitRef,
-    label_strs::AssociatedItemDefIds,
-    label_strs::GenericsOfItem,
+// Fully Built Labels
+
+const LABELS_CONST: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_CONST,
 ];
 
-// Fully Built Labels
+/// Constant/Typedef in an impl
+const LABELS_CONST_ASSOCIATED: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_CONST,
+    BASE_ASSOCIATED,
+];
+
+/// Trait-Const/Typedef DepNodes
+const LABELS_CONST_TRAIT: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_CONST,
+    BASE_ASSOCIATED,
+    EXTRA_TRAIT,
+];
 
 /// Function DepNode
 const LABELS_FN: &[&[&str]] = &[
@@ -154,11 +173,20 @@ const LABELS_FN: &[&[&str]] = &[
 ];
 
 /// Method DepNodes
-const LABELS_METHOD: &[&[&str]] = &[
+const LABELS_FN_ASSOCIATED: &[&[&str]] = &[
     BASE_HIR,
     BASE_MIR,
     BASE_FN,
-    EXTRA_METHOD,
+    EXTRA_ASSOCIATED,
+];
+
+/// Trait-Method DepNodes
+const LABELS_FN_TRAIT: &[&[&str]] = &[
+    BASE_HIR,
+    BASE_MIR,
+    BASE_FN,
+    EXTRA_ASSOCIATED,
+    EXTRA_TRAIT,
 ];
 
 /// Impl DepNodes
@@ -173,28 +201,7 @@ const LABELS_STRUCT: &[&[&str]] = &[
     BASE_STRUCT,
 ];
 
-const LABELS_CONST: &[&[&str]] = &[
-    BASE_HIR,
-    BASE_CONST,
-];
-
-/// Trait-Const/Typedef DepNodes
-const LABELS_TRAIT_CONST: &[&[&str]] = &[
-    BASE_HIR,
-    BASE_CONST,
-    EXTRA_TRAIT,
-];
-
-/// Trait-Method DepNodes
-const LABELS_TRAIT_METHOD: &[&[&str]] = &[
-    BASE_HIR,
-    BASE_MIR,
-    BASE_FN,
-    EXTRA_METHOD,
-    EXTRA_TRAIT,
-];
-
-/// Trait DepNodes
+/// Trait Definition DepNodes
 const LABELS_TRAIT_DEF: &[&[&str]] = &[
     BASE_HIR,
     BASE_TRAIT_DEF,
@@ -380,7 +387,7 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     /// A union definition, e.g. `union Foo<A, B> {x: A, y: B}`
                     HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
                     /// Represents a Trait Declaration
-                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
+                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT_DEF),
                     /// `impl Trait for .. {}`
                     HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
                     /// An implementation, eg `impl<A> Trait for Foo { .. }`
@@ -397,12 +404,19 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
             },
             HirNode::NodeTraitItem(item) => {
                 match item.node {
-                    TraitItemKind::Method(..) => ("NodeTraitItem", &LABELS_TRAIT_METHOD),
-                    TraitItemKind::Const(..) => ("NodeTraitConst", &LABELS_TRAIT_METHOD),
-                    TraitItemKind::Type(..) => ("NodeTraitConst", &LABELS_TRAIT_METHOD),
+                    TraitItemKind::Method(..) => ("NodeTraitItem", &LABELS_FN_TRAIT),
+                    TraitItemKind::Const(..) => ("NodeTraitConst", &LABELS_CONST_TRAIT),
+                    TraitItemKind::Type(..) => ("NodeTraitType", &LABELS_CONST_TRAIT),
                 }
             },
-            HirNode::NodeImplItem(..) => ("NodeImplItem", &LABELS_METHOD),
+            HirNode::NodeImplItem(item => {
+                match item.node {
+                    ImplItemKind::Method(..) => ("NodeImplItem", &LABELS_FN_ASSOCIATED),
+                    ImplItemKind::Const(..) => ("NodeImplConst", &LABELS_CONST_ASSOCIATED),
+                    ImplItemKind::Type(..) => ("NodeImplType", &LABELS_CONST_ASSOCIATED),
+
+                }
+            },
             _ => self.tcx.sess.span_fatal(
                 attr.span,
                 &format!(
