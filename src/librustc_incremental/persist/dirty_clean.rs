@@ -364,32 +364,45 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
 
                     /// An `extern crate` item, with optional original crate name,
                     // HirItem::ItemExternCrate(..),
+
                     /// `use foo::bar::*;` or `use foo::bar::baz as quux;`
                     // HirItem::ItemUse(..),
+
                     /// A `static` item
                     HirItem::ItemStatic(..) => ("ItemStatic", &LABELS_CONST),
+
                     /// A `const` item
                     HirItem::ItemConst(..) => ("ItemConst", &LABELS_CONST),
+
                     /// A function declaration (FIXME: standalone, impl and trait-impl??)
                     HirItem::ItemFn(..) => ("ItemFn", &LABELS_FN),
+
                     /// A module
                     // HirItem::ItemMod(..),
+
                     /// An external module
                     //HirItem::ItemForeignMod(..),
+
                     /// Module-level inline assembly (from global_asm!)
-                    //HirItem::ItemGlobalAsm(..),
+
                     /// A type alias, e.g. `type Foo = Bar<u8>`
                     HirItem::ItemTy(..) => ("ItemTy", &LABELS_CONST),
+
                     /// An enum definition, e.g. `enum Foo<A, B> {C<A>, D<B>}`
                     HirItem::ItemEnum(..) => ("ItemEnum", &LABELS_STRUCT),
+
                     /// A struct definition, e.g. `struct Foo<A> {x: A}`
                     HirItem::ItemStruct(..) => ("ItemStruct", &LABELS_STRUCT),
+
                     /// A union definition, e.g. `union Foo<A, B> {x: A, y: B}`
                     HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
+
                     /// Represents a Trait Declaration
                     HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
+
                     /// `impl Trait for .. {}`
                     HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
+
                     /// An implementation, eg `impl<A> Trait for Foo { .. }`
                     HirItem::ItemImpl(..) => ("ItemImpl", &LABELS_IMPL),
 
