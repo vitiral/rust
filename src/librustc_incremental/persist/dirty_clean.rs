@@ -46,7 +46,7 @@ use std::iter::FromIterator;
 use std::vec::Vec;
 use rustc::dep_graph::{DepNode, label_strs};
 use rustc::hir;
-use rustc::hir::{Item_ as HirItem, ImplItemKind, TraitItemKind},
+use rustc::hir::{Item_ as HirItem, ImplItemKind, TraitItemKind};
 use rustc::hir::map::Node as HirNode;
 use rustc::hir::def_id::DefId;
 use rustc::hir::itemlikevisit::ItemLikeVisitor;
@@ -77,8 +77,6 @@ const EXTRA_ASSOCIATED: &[&str] = &[
 ];
 
 /// For typedef, constants, and statics
-///
-/// FIXME: question -- I split const/trait-method up and added TypeOfItem to these
 const BASE_CONST: &[&str] = &[
     label_strs::TypeOfItem,
 ];
@@ -109,7 +107,6 @@ const BASE_IMPL: &[&str] = &[
     label_strs::GenericsOfItem,
     label_strs::ImplTraitRef,
 ];
-
 
 /// DepNodes for MirValidated/Optimized, which is relevant in "executable"
 /// code, i.e. functions+methods
@@ -154,14 +151,14 @@ const LABELS_CONST: &[&[&str]] = &[
 const LABELS_CONST_ASSOCIATED: &[&[&str]] = &[
     BASE_HIR,
     BASE_CONST,
-    BASE_ASSOCIATED,
+    EXTRA_ASSOCIATED,
 ];
 
 /// Trait-Const/Typedef DepNodes
 const LABELS_CONST_TRAIT: &[&[&str]] = &[
     BASE_HIR,
     BASE_CONST,
-    BASE_ASSOCIATED,
+    EXTRA_ASSOCIATED,
     EXTRA_TRAIT,
 ];
 
@@ -362,48 +359,48 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     // note: these are in the same order as hir::Item_;
                     // FIXME(vitiral): do commented out ones
 
-                    /// An `extern crate` item, with optional original crate name,
+                    // // An `extern crate` item, with optional original crate name,
                     // HirItem::ItemExternCrate(..),
 
-                    /// `use foo::bar::*;` or `use foo::bar::baz as quux;`
+                    // // `use foo::bar::*;` or `use foo::bar::baz as quux;`
                     // HirItem::ItemUse(..),
 
-                    /// A `static` item
+                    // A `static` item
                     HirItem::ItemStatic(..) => ("ItemStatic", &LABELS_CONST),
 
-                    /// A `const` item
+                    // A `const` item
                     HirItem::ItemConst(..) => ("ItemConst", &LABELS_CONST),
 
-                    /// A function declaration (FIXME: standalone, impl and trait-impl??)
+                    // A function declaration (FIXME: standalone, impl and trait-impl??)
                     HirItem::ItemFn(..) => ("ItemFn", &LABELS_FN),
 
-                    /// A module
+                    // // A module
                     // HirItem::ItemMod(..),
 
-                    /// An external module
-                    //HirItem::ItemForeignMod(..),
+                    // // An external module
+                    // HirItem::ItemForeignMod(..),
 
-                    /// Module-level inline assembly (from global_asm!)
+                    // Module-level inline assembly (from global_asm!)
 
-                    /// A type alias, e.g. `type Foo = Bar<u8>`
+                    // A type alias, e.g. `type Foo = Bar<u8>`
                     HirItem::ItemTy(..) => ("ItemTy", &LABELS_CONST),
 
-                    /// An enum definition, e.g. `enum Foo<A, B> {C<A>, D<B>}`
+                    // An enum definition, e.g. `enum Foo<A, B> {C<A>, D<B>}`
                     HirItem::ItemEnum(..) => ("ItemEnum", &LABELS_STRUCT),
 
-                    /// A struct definition, e.g. `struct Foo<A> {x: A}`
+                    // A struct definition, e.g. `struct Foo<A> {x: A}`
                     HirItem::ItemStruct(..) => ("ItemStruct", &LABELS_STRUCT),
 
-                    /// A union definition, e.g. `union Foo<A, B> {x: A, y: B}`
+                    // A union definition, e.g. `union Foo<A, B> {x: A, y: B}`
                     HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
 
-                    /// Represents a Trait Declaration
+                    // Represents a Trait Declaration
                     HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
 
-                    /// `impl Trait for .. {}`
+                    // `impl Trait for .. {}`
                     HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
 
-                    /// An implementation, eg `impl<A> Trait for Foo { .. }`
+                    // An implementation, eg `impl<A> Trait for Foo { .. }`
                     HirItem::ItemImpl(..) => ("ItemImpl", &LABELS_IMPL),
 
                     _ => self.tcx.sess.span_fatal(
@@ -422,7 +419,7 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     TraitItemKind::Type(..) => ("NodeTraitType", &LABELS_CONST_TRAIT),
                 }
             },
-            HirNode::NodeImplItem(item => {
+            HirNode::NodeImplItem(item) => {
                 match item.node {
                     ImplItemKind::Method(..) => ("NodeImplItem", &LABELS_FN_ASSOCIATED),
                     ImplItemKind::Const(..) => ("NodeImplConst", &LABELS_CONST_ASSOCIATED),
