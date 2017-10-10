@@ -131,7 +131,9 @@ const BASE_TRAIT_DEF: &[&str] = &[
     label_strs::GenericsOfItem,
     label_strs::ObjectSafety,
     label_strs::PredicatesOfItem,
-    label_strs::SpecializationGraph,
+    // // FIXME: rustc_clean on `pub trait TraitVisibility { }` panics with an ICE
+    // // (and a really unhelpful error message) if this is uncommented
+    // label_strs::SpecializationGraph,
     label_strs::TraitDefOfItem,
     label_strs::TraitImpls,
 ];
