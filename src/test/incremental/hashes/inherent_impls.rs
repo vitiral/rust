@@ -106,7 +106,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="AssociatedItem,Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="AssociatedItems,Hir,HirBody")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
