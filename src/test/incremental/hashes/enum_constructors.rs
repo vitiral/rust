@@ -154,7 +154,10 @@ mod change_constructor_path_indirectly_struct_like {
     #[cfg(not(cfail1))]
     use super::Enum2 as TheEnum;
 
-    #[rustc_clean(cfg="cfail2", except="FnSignature,Hir,HirBody,MirOptimized,MirValidated,TypeckTables")]
+    #[rustc_clean(
+        cfg="cfail2",
+        except="FnSignature,Hir,HirBody,MirOptimized,MirValidated,TypeckTables"
+    )]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
