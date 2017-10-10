@@ -400,7 +400,18 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     HirItem::ItemUnion(..) => ("ItemUnion", &LABELS_STRUCT),
 
                     // Represents a Trait Declaration
-                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
+                    // FIXME(vitiral): trait declaration is buggy as hell because sometimes some of
+                    // the depnodes don't exist (because they legitametely didn't need to be
+                    // calculated)
+                    //
+                    // michaelwoerister and myself came up with a possible solution,
+                    // to just do this before every query
+                    // ```
+                    // ::rustc::ty::maps::plumbing::force_from_dep_node(tcx, dep_node)
+                    // ```
+                    // We are waiting on feedback from compiler team
+                    //
+                    //HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
 
                     // `impl Trait for .. {}`
                     HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
