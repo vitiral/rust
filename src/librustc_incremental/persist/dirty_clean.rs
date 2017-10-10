@@ -127,15 +127,21 @@ const BASE_STRUCT: &[&str] = &[
 
 /// Trait Definition DepNodes
 const BASE_TRAIT_DEF: &[&str] = &[
-    label_strs::AssociatedItemDefIds,
+    label_strs::SpecializationGraph,
     label_strs::GenericsOfItem,
-    label_strs::ObjectSafety,
     label_strs::PredicatesOfItem,
+
     // // FIXME: rustc_clean on `pub trait TraitVisibility { }` panics with an ICE
     // // (and a really unhelpful error message) if this is uncommented
     // label_strs::SpecializationGraph,
-    label_strs::TraitDefOfItem,
-    label_strs::TraitImpls,
+
+    // // FIXME: rustc_clean on the method of
+    // // `trait TraitAddSecondLifetimeBoundToMethodLifetimeParameter`
+    // // panics with an ICE if any of these are uncommented
+    // label_strs::AssociatedItemDefIds,
+    // label_strs::ObjectSafety,
+    // label_strs::TraitDefOfItem,
+    // label_strs::TraitImpls,
 ];
 
 /// extra DepNodes for methods (+fn)
