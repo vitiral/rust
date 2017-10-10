@@ -58,7 +58,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="HirBody")]
+    #[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated,TypeckTables")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_clean(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -83,7 +83,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated,TypeckTables")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -106,7 +106,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="AssociatedItem,Hir,HirBody")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -125,7 +125,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_dirty(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_dirty(cfg="cfail2", except="TypeOfItem,PredicatesOfItem")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -146,7 +146,7 @@ impl Foo {
 impl Foo {
     #[rustc_clean(
         cfg="cfail2",
-        except="FnSignature,TypeckTables,TypeOfItem,MirOptimized,MirValidated"
+        except="Hir,HirBody,FnSignature,TypeckTables,MirOptimized,MirValidated"
     )]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
@@ -195,7 +195,7 @@ impl Foo {
 impl Foo {
     #[rustc_clean(
         cfg="cfail2",
-        except="GenericsOfItem,FnSignature,TypeckTables,TypeOfItem,MirOptimized,MirValidated"
+        except="Hir,HirBody,FnSignature,TypeckTables,MirOptimized,MirValidated"
     )]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
@@ -238,7 +238,9 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody,FnSignature,MirOptimized,MirValidated")]
+    #[rustc_clean(
+        cfg="cfail2",
+        except="Hir,HirBody,FnSignature,MirOptimized,MirValidated,TypeckTables")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -304,7 +306,7 @@ impl Foo {
 impl Foo {
     #[rustc_clean(
         cfg="cfail2",
-        except="GenericsOfItem,FnSignature,TypeckTables,TypeOfItem,MirOptimized,MirValidated"
+        except="Hir,HirBody,FnSignature,TypeckTables,MirOptimized,MirValidated"
     )]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
@@ -326,7 +328,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="Hir,HirBody,FnSignature,TypeckTables")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -347,7 +349,7 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="Hir,HirBody,FnSignature,TypeckTables")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -391,7 +393,7 @@ impl Foo {
 impl Foo {
     #[rustc_clean(
         cfg="cfail2",
-        except="GenericsOfItem,FnSignature,TypeckTables,TypeOfItem,MirOptimized,MirValidated"
+        except="Hir,HirBody,GenericsOfItem,PredicatesOfItem,TypeOfItem",
     )]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
@@ -413,7 +415,10 @@ impl Foo {
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
 impl Foo {
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody,GenericsOfItem,PredicatesOfItem,TypeOfItem")]
+    #[rustc_clean(
+        cfg="cfail2",
+        except="Hir,HirBody,GenericsOfItem,PredicatesOfItem,TypeOfItem,TypeckTables"
+    )]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
