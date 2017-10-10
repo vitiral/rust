@@ -45,7 +45,7 @@ fn change_field_value_struct_like() -> Enum {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -70,7 +70,7 @@ fn change_field_order_struct_like() -> Enum {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="HirBody")]
+#[rustc_clean(cfg="cfail2", except="HirBody,TypeckTables")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -109,7 +109,7 @@ fn change_constructor_path_struct_like() {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated,TypeckTables")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -134,7 +134,7 @@ fn change_constructor_variant_struct_like() {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -154,7 +154,7 @@ mod change_constructor_path_indirectly_struct_like {
     #[cfg(not(cfail1))]
     use super::Enum2 as TheEnum;
 
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="FnSignature,Hir,HirBody,MirOptimized,MirValidated,TypeckTables")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -176,7 +176,7 @@ mod change_constructor_variant_indirectly_struct_like {
     #[cfg(not(cfail1))]
     use super::Enum2::Struct2 as Variant;
 
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+    #[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_clean(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -197,7 +197,7 @@ fn change_field_value_tuple_like() -> Enum {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -214,7 +214,7 @@ fn change_constructor_path_tuple_like() {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated,TypeckTables")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -231,7 +231,7 @@ fn change_constructor_variant_tuple_like() {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated")]
+#[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated,TypeckTables")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -298,9 +298,8 @@ fn change_constructor_path_c_like() {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
-#[rustc_clean(cfg="cfail3")]
 #[rustc_clean(cfg="cfail2", except="HirBody,MirOptimized,MirValidated,TypeckTables")]
+#[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail3")]
 fn change_constructor_path_c_like() {
     let _ = Clike2::B;
