@@ -163,7 +163,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail2", except="Hir,HirBody,AssociatedItemDefIds")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -188,7 +188,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -212,7 +212,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -233,7 +233,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -256,7 +256,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -278,7 +278,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -299,7 +299,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -323,7 +323,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -344,7 +344,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -365,7 +365,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -386,7 +386,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -410,7 +410,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -434,7 +434,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -455,7 +455,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -476,7 +476,7 @@ impl Foo {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -500,7 +500,7 @@ impl Bar<u32> {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2", except="Hir,HirBody,GenericsOfItem")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
