@@ -37,7 +37,7 @@
 trait TraitVisibility { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -50,7 +50,7 @@ pub trait TraitVisibility { }
 trait TraitUnsafety { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,TraitDefOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -64,7 +64,7 @@ trait TraitAddMethod {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="AssociatedItemDefIds,Hir,HirBody,ObjectSafety")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -81,7 +81,7 @@ trait TraitChangeMethodName {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="AssociatedItemDefIds,Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -252,7 +252,7 @@ trait TraitAddMethodDefaultImplementation {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -274,7 +274,7 @@ trait TraitChangeOrderOfMethods {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="AssociatedItemDefIds,Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -593,7 +593,7 @@ trait TraitAddAssociatedType {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="AssociatedItemDefIds,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -617,7 +617,7 @@ trait TraitAddTraitBoundToAssociatedType {
 // Apparently the type bound contributes to the predicates of the trait, but
 // does not change the associated item itself.
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -642,7 +642,7 @@ trait TraitAddLifetimeBoundToAssociatedType<'a> {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -667,7 +667,7 @@ trait TraitAddDefaultToAssociatedType {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -690,7 +690,7 @@ trait TraitAddAssociatedConstant {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="AssociatedItemDefIds,Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -711,7 +711,7 @@ trait TraitAddInitializerToAssociatedConstant {
 }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_clean(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -765,7 +765,7 @@ trait TraitChangeTypeOfAssociatedConstant {
 trait TraitAddSuperTrait { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -778,7 +778,7 @@ trait TraitAddSuperTrait : ReferencedTrait0 { }
 trait TraitAddBuiltiBound { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -791,7 +791,7 @@ trait TraitAddBuiltiBound : Send { }
 trait TraitAddStaticLifetimeBound { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -804,7 +804,7 @@ trait TraitAddStaticLifetimeBound : 'static { }
 trait TraitAddTraitAsSecondBound : ReferencedTrait0 { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -814,7 +814,7 @@ trait TraitAddTraitAsSecondBound : ReferencedTrait0 + ReferencedTrait1 { }
 trait TraitAddTraitAsSecondBoundFromBuiltin : Send { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -827,7 +827,7 @@ trait TraitAddTraitAsSecondBoundFromBuiltin : Send + ReferencedTrait0 { }
 trait TraitAddBuiltinBoundAsSecondBound : ReferencedTrait0 { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -850,7 +850,7 @@ trait TraitAddBuiltinBoundAsSecondBoundFromBuiltin: Send + Copy { }
 trait TraitAddStaticBoundAsSecondBound : ReferencedTrait0 { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -860,7 +860,7 @@ trait TraitAddStaticBoundAsSecondBound : ReferencedTrait0 + 'static { }
 trait TraitAddStaticBoundAsSecondBoundFromBuiltin : Send { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -873,7 +873,7 @@ trait TraitAddStaticBoundAsSecondBoundFromBuiltin : Send + 'static { }
 trait TraitAddTypeParameterToTrait { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -886,7 +886,7 @@ trait TraitAddTypeParameterToTrait<T> { }
 trait TraitAddLifetimeParameterToTrait { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -899,7 +899,7 @@ trait TraitAddLifetimeParameterToTrait<'a> { }
 trait TraitAddTraitBoundToTypeParameterOfTrait<T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -912,7 +912,7 @@ trait TraitAddTraitBoundToTypeParameterOfTrait<T: ReferencedTrait0> { }
 trait TraitAddLifetimeBoundToTypeParameterOfTrait<'a, T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -925,7 +925,7 @@ trait TraitAddLifetimeBoundToTypeParameterOfTrait<'a, T: 'a> { }
 trait TraitAddLifetimeBoundToLifetimeParameterOfTrait<'a, 'b> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -938,7 +938,7 @@ trait TraitAddLifetimeBoundToLifetimeParameterOfTrait<'a: 'b, 'b> { }
 trait TraitAddBuiltinBoundToTypeParameterOfTrait<T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -951,7 +951,7 @@ trait TraitAddBuiltinBoundToTypeParameterOfTrait<T: Send> { }
 trait TraitAddSecondTypeParameterToTrait<T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -964,7 +964,7 @@ trait TraitAddSecondTypeParameterToTrait<T, S> { }
 trait TraitAddSecondLifetimeParameterToTrait<'a> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -977,7 +977,7 @@ trait TraitAddSecondLifetimeParameterToTrait<'a, 'b> { }
 trait TraitAddSecondTraitBoundToTypeParameterOfTrait<T: ReferencedTrait0> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -990,7 +990,7 @@ trait TraitAddSecondTraitBoundToTypeParameterOfTrait<T: ReferencedTrait0 + Refer
 trait TraitAddSecondLifetimeBoundToTypeParameterOfTrait<'a, 'b, T: 'a> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1003,7 +1003,7 @@ trait TraitAddSecondLifetimeBoundToTypeParameterOfTrait<'a, 'b, T: 'a + 'b> { }
 trait TraitAddSecondLifetimeBoundToLifetimeParameterOfTrait<'a: 'b, 'b, 'c> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1016,7 +1016,7 @@ trait TraitAddSecondLifetimeBoundToLifetimeParameterOfTrait<'a: 'b + 'c, 'b, 'c>
 trait TraitAddSecondBuiltinBoundToTypeParameterOfTrait<T: Send> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1035,7 +1035,7 @@ struct ReferenceType1 {}
 trait TraitAddTraitBoundToTypeParameterOfTraitWhere<T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1048,7 +1048,7 @@ trait TraitAddTraitBoundToTypeParameterOfTraitWhere<T> where T: ReferencedTrait0
 trait TraitAddLifetimeBoundToTypeParameterOfTraitWhere<'a, T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="GenericsOfItem,Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1061,7 +1061,7 @@ trait TraitAddLifetimeBoundToTypeParameterOfTraitWhere<'a, T> where T: 'a { }
 trait TraitAddLifetimeBoundToLifetimeParameterOfTraitWhere<'a, 'b> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1074,7 +1074,7 @@ trait TraitAddLifetimeBoundToLifetimeParameterOfTraitWhere<'a, 'b> where 'a: 'b 
 trait TraitAddBuiltinBoundToTypeParameterOfTraitWhere<T> { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1087,7 +1087,7 @@ trait TraitAddBuiltinBoundToTypeParameterOfTraitWhere<T> where T: Send { }
 trait TraitAddSecondTraitBoundToTypeParameterOfTraitWhere<T> where T: ReferencedTrait0 { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1114,7 +1114,7 @@ trait TraitAddSecondLifetimeBoundToTypeParameterOfTraitWhere<'a, 'b, T> where T:
 trait TraitAddSecondLifetimeBoundToLifetimeParameterOfTraitWhere<'a, 'b, 'c> where 'a: 'b { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1127,7 +1127,7 @@ trait TraitAddSecondLifetimeBoundToLifetimeParameterOfTraitWhere<'a, 'b, 'c> whe
 trait TraitAddSecondBuiltinBoundToTypeParameterOfTraitWhere<T> where T: Send { }
 
 #[cfg(not(cfail1))]
-#[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+#[rustc_clean(cfg="cfail2")]
 #[rustc_clean(cfg="cfail3")]
 #[rustc_metadata_dirty(cfg="cfail2")]
 #[rustc_metadata_clean(cfg="cfail3")]
@@ -1230,7 +1230,7 @@ mod change_method_type_parameter_bound_indirectly {
     #[cfg(not(cfail1))]
     use super::ReferencedTrait1 as Bound;
 
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+    #[rustc_clean(cfg="cfail2")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
@@ -1249,7 +1249,7 @@ mod change_method_type_parameter_bound_indirectly_where {
     #[cfg(not(cfail1))]
     use super::ReferencedTrait1 as Bound;
 
-    #[rustc_clean(cfg="cfail2", except="Hir,HirBody,PredicatesOfItem")]
+    #[rustc_clean(cfg="cfail2")]
     #[rustc_clean(cfg="cfail3")]
     #[rustc_metadata_dirty(cfg="cfail2")]
     #[rustc_metadata_clean(cfg="cfail3")]
