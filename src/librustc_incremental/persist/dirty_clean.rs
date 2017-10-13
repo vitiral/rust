@@ -44,7 +44,7 @@
 use std::collections::HashSet;
 use std::iter::FromIterator;
 use std::vec::Vec;
-use rustc::dep_graph::{DepNode, label_strs};
+use rustc::dep_graph::{DepNode, DepKind, label_strs};
 use rustc::hir;
 use rustc::hir::{Item_ as HirItem, ImplItemKind, TraitItemKind};
 use rustc::hir::map::Node as HirNode;
@@ -499,11 +499,23 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
         }
     }
 
+    fn force_node(&self, dep_node: &DepNode) {
+        match dep_node.kind {
+            // prevents panic when obtaining fingerprint related to trait
+            DepKind::SpecializationGraph
+            | DepKind::AssociatedItemDefIds
+            | DepKind::ObjectSafety
+            | DepKind::TraitDefOfItem
+            | DepKind::TraitImpls => {
+                force_from_dep_node(self.tcx, dep_node);
+            },
+            _ => {},
+        }
+    }
     fn assert_dirty(&self, item_span: Span, dep_node: DepNode) {
         debug!("assert_dirty({:?})", dep_node);
 
-        // prevents panic when obtaining fingerprint
-        force_from_dep_node(self.tcx, &dep_node);
+        self.force_node(&dep_node);
 
         let current_fingerprint = self.tcx.dep_graph.fingerprint_of(&dep_node);
         let prev_fingerprint = self.tcx.dep_graph.prev_fingerprint_of(&dep_node);
@@ -519,8 +531,7 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
     fn assert_clean(&self, item_span: Span, dep_node: DepNode) {
         debug!("assert_clean({:?})", dep_node);
 
-        // prevents panic when obtaining fingerprint
-        force_from_dep_node(self.tcx, &dep_node);
+        self.force_node(&dep_node);
 
         let current_fingerprint = self.tcx.dep_graph.fingerprint_of(&dep_node);
         let prev_fingerprint = self.tcx.dep_graph.prev_fingerprint_of(&dep_node);
