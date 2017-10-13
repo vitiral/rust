@@ -57,6 +57,7 @@ use syntax::ast::{self, Attribute, NestedMetaItem};
 use rustc_data_structures::fx::{FxHashSet, FxHashMap};
 use syntax_pos::Span;
 use rustc::ty::TyCtxt;
+use rustc::ty::maps::force_from_dep_node;
 
 // FIXME: validate with
 //  X - enum_constructors.rs
@@ -501,6 +502,9 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
     fn assert_dirty(&self, item_span: Span, dep_node: DepNode) {
         debug!("assert_dirty({:?})", dep_node);
 
+        // prevents panic when obtaining fingerprint
+        force_from_dep_node(self.tcx, &dep_node);
+
         let current_fingerprint = self.tcx.dep_graph.fingerprint_of(&dep_node);
         let prev_fingerprint = self.tcx.dep_graph.prev_fingerprint_of(&dep_node);
 
@@ -514,6 +518,9 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
 
     fn assert_clean(&self, item_span: Span, dep_node: DepNode) {
         debug!("assert_clean({:?})", dep_node);
+
+        // prevents panic when obtaining fingerprint
+        force_from_dep_node(self.tcx, &dep_node);
 
         let current_fingerprint = self.tcx.dep_graph.fingerprint_of(&dep_node);
         let prev_fingerprint = self.tcx.dep_graph.prev_fingerprint_of(&dep_node);
