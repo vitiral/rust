@@ -412,7 +412,7 @@ impl<'a, 'tcx> DirtyCleanVisitor<'a, 'tcx> {
                     // ```
                     // We are waiting on feedback from compiler team
                     //
-                    //HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
+                    HirItem::ItemTrait(..) => ("ItemTrait", &LABELS_TRAIT),
 
                     // `impl Trait for .. {}`
                     HirItem::ItemDefaultImpl(..) => ("ItemDefaultImpl", &LABELS_IMPL),
