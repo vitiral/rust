@@ -538,374 +538,374 @@
 //}
 //
 //
-//
-//// Add second builtin bound to method type parameter ------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddSecondBuiltinBoundToMethodTypeParameter {
-//    fn method<T: Sized>();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddSecondBuiltinBoundToMethodTypeParameter {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<T: Sized + Sync>();
-//}
-//
-//
-//
-//// Add second lifetime bound to method lifetime parameter -----------------------------
-//#[cfg(cfail1)]
-//trait TraitAddSecondLifetimeBoundToMethodLifetimeParameter {
-//    fn method<'a, 'b, 'c: 'a>(a: &'a u32, b: &'b u32, c: &'c u32);
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddSecondLifetimeBoundToMethodLifetimeParameter {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<'a, 'b, 'c: 'a + 'b>(a: &'a u32, b: &'b u32, c: &'c u32);
-//}
-//
-//
-//
-//// Add associated type ------------------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddAssociatedType {
-//
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddAssociatedType {
-//    type Associated;
-//
-//    fn method();
-//}
-//
-//
-//
-//// Add trait bound to associated type ---------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddTraitBoundToAssociatedType {
-//    type Associated;
-//
-//    fn method();
-//}
-//
-//
-//// Apparently the type bound contributes to the predicates of the trait, but
-//// does not change the associated item itself.
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTraitBoundToAssociatedType {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_clean(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    type Associated: ReferencedTrait0;
-//
-//    fn method();
-//}
-//
-//
-//
-//// Add lifetime bound to associated type ------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddLifetimeBoundToAssociatedType<'a> {
-//    type Associated;
-//
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddLifetimeBoundToAssociatedType<'a> {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_clean(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    type Associated: 'a;
-//
-//    fn method();
-//}
-//
-//
-//
-//// Add default to associated type -------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddDefaultToAssociatedType {
-//    type Associated;
-//
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddDefaultToAssociatedType {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    type Associated = ReferenceType0;
-//
-//    fn method();
-//}
-//
-//
-//
-//// Add associated constant --------------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddAssociatedConstant {
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddAssociatedConstant {
-//    const Value: u32;
-//
-//    fn method();
-//}
-//
-//
-//
-//// Add initializer to associated constant -----------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddInitializerToAssociatedConstant {
-//    const Value: u32;
-//
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddInitializerToAssociatedConstant {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    const Value: u32 = 1;
-//
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_clean(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method();
-//}
-//
-//
-//
-//// Change type of associated constant ---------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitChangeTypeOfAssociatedConstant {
-//    const Value: u32;
-//
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitChangeTypeOfAssociatedConstant {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    const Value: f64;
-//
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_clean(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method();
-//}
-//
-//
-//
-//// Add super trait ----------------------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddSuperTrait { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddSuperTrait : ReferencedTrait0 { }
-//
-//
-//
-//// Add builtin bound (Send or Copy) -----------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddBuiltiBound { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddBuiltiBound : Send { }
-//
-//
-//
-//// Add 'static lifetime bound to trait --------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddStaticLifetimeBound { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddStaticLifetimeBound : 'static { }
-//
-//
-//
-//// Add super trait as second bound ------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddTraitAsSecondBound : ReferencedTrait0 { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTraitAsSecondBound : ReferencedTrait0 + ReferencedTrait1 { }
-//
-//#[cfg(cfail1)]
-//trait TraitAddTraitAsSecondBoundFromBuiltin : Send { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTraitAsSecondBoundFromBuiltin : Send + ReferencedTrait0 { }
-//
-//
-//
-//// Add builtin bound as second bound ----------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddBuiltinBoundAsSecondBound : ReferencedTrait0 { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddBuiltinBoundAsSecondBound : ReferencedTrait0 + Send { }
-//
-//#[cfg(cfail1)]
-//trait TraitAddBuiltinBoundAsSecondBoundFromBuiltin : Send { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddBuiltinBoundAsSecondBoundFromBuiltin: Send + Copy { }
-//
-//
-//
-//// Add 'static bounds as second bound ---------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddStaticBoundAsSecondBound : ReferencedTrait0 { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddStaticBoundAsSecondBound : ReferencedTrait0 + 'static { }
-//
-//#[cfg(cfail1)]
-//trait TraitAddStaticBoundAsSecondBoundFromBuiltin : Send { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddStaticBoundAsSecondBoundFromBuiltin : Send + 'static { }
-//
-//
-//
-//// Add type parameter to trait ----------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddTypeParameterToTrait { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTypeParameterToTrait<T> { }
-//
-//
-//
-//// Add lifetime parameter to trait ------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddLifetimeParameterToTrait { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddLifetimeParameterToTrait<'a> { }
-//
-//
-//
-//// Add trait bound to type parameter of trait -------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddTraitBoundToTypeParameterOfTrait<T> { }
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_dirty(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTraitBoundToTypeParameterOfTrait<T: ReferencedTrait0> { }
-//
-//
+
+// Add second builtin bound to method type parameter ------------------------------
+#[cfg(cfail1)]
+trait TraitAddSecondBuiltinBoundToMethodTypeParameter {
+    fn method<T: Sized>();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddSecondBuiltinBoundToMethodTypeParameter {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<T: Sized + Sync>();
+}
+
+
+
+// Add second lifetime bound to method lifetime parameter -----------------------------
+#[cfg(cfail1)]
+trait TraitAddSecondLifetimeBoundToMethodLifetimeParameter {
+    fn method<'a, 'b, 'c: 'a>(a: &'a u32, b: &'b u32, c: &'c u32);
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddSecondLifetimeBoundToMethodLifetimeParameter {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<'a, 'b, 'c: 'a + 'b>(a: &'a u32, b: &'b u32, c: &'c u32);
+}
+
+
+
+// Add associated type ------------------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddAssociatedType {
+
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddAssociatedType {
+    type Associated;
+
+    fn method();
+}
+
+
+
+// Add trait bound to associated type ---------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddTraitBoundToAssociatedType {
+    type Associated;
+
+    fn method();
+}
+
+
+// Apparently the type bound contributes to the predicates of the trait, but
+// does not change the associated item itself.
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTraitBoundToAssociatedType {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_clean(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    type Associated: ReferencedTrait0;
+
+    fn method();
+}
+
+
+
+// Add lifetime bound to associated type ------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddLifetimeBoundToAssociatedType<'a> {
+    type Associated;
+
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddLifetimeBoundToAssociatedType<'a> {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_clean(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    type Associated: 'a;
+
+    fn method();
+}
+
+
+
+// Add default to associated type -------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddDefaultToAssociatedType {
+    type Associated;
+
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddDefaultToAssociatedType {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    type Associated = ReferenceType0;
+
+    fn method();
+}
+
+
+
+// Add associated constant --------------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddAssociatedConstant {
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddAssociatedConstant {
+    const Value: u32;
+
+    fn method();
+}
+
+
+
+// Add initializer to associated constant -----------------------------------------
+#[cfg(cfail1)]
+trait TraitAddInitializerToAssociatedConstant {
+    const Value: u32;
+
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddInitializerToAssociatedConstant {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    const Value: u32 = 1;
+
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_clean(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method();
+}
+
+
+
+// Change type of associated constant ---------------------------------------------
+#[cfg(cfail1)]
+trait TraitChangeTypeOfAssociatedConstant {
+    const Value: u32;
+
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitChangeTypeOfAssociatedConstant {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    const Value: f64;
+
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_clean(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method();
+}
+
+
+
+// Add super trait ----------------------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddSuperTrait { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddSuperTrait : ReferencedTrait0 { }
+
+
+
+// Add builtin bound (Send or Copy) -----------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddBuiltiBound { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddBuiltiBound : Send { }
+
+
+
+// Add 'static lifetime bound to trait --------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddStaticLifetimeBound { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddStaticLifetimeBound : 'static { }
+
+
+
+// Add super trait as second bound ------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddTraitAsSecondBound : ReferencedTrait0 { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTraitAsSecondBound : ReferencedTrait0 + ReferencedTrait1 { }
+
+#[cfg(cfail1)]
+trait TraitAddTraitAsSecondBoundFromBuiltin : Send { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTraitAsSecondBoundFromBuiltin : Send + ReferencedTrait0 { }
+
+
+
+// Add builtin bound as second bound ----------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddBuiltinBoundAsSecondBound : ReferencedTrait0 { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddBuiltinBoundAsSecondBound : ReferencedTrait0 + Send { }
+
+#[cfg(cfail1)]
+trait TraitAddBuiltinBoundAsSecondBoundFromBuiltin : Send { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddBuiltinBoundAsSecondBoundFromBuiltin: Send + Copy { }
+
+
+
+// Add 'static bounds as second bound ---------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddStaticBoundAsSecondBound : ReferencedTrait0 { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddStaticBoundAsSecondBound : ReferencedTrait0 + 'static { }
+
+#[cfg(cfail1)]
+trait TraitAddStaticBoundAsSecondBoundFromBuiltin : Send { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddStaticBoundAsSecondBoundFromBuiltin : Send + 'static { }
+
+
+
+// Add type parameter to trait ----------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddTypeParameterToTrait { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTypeParameterToTrait<T> { }
+
+
+
+// Add lifetime parameter to trait ------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddLifetimeParameterToTrait { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddLifetimeParameterToTrait<'a> { }
+
+
+
+// Add trait bound to type parameter of trait -------------------------------------
+#[cfg(cfail1)]
+trait TraitAddTraitBoundToTypeParameterOfTrait<T> { }
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_dirty(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTraitBoundToTypeParameterOfTrait<T: ReferencedTrait0> { }
+
+
 
 // Add lifetime bound to type parameter of trait ----------------------------------
 #[cfg(cfail1)]
