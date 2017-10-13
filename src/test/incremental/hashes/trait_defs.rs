@@ -284,260 +284,260 @@
 //}
 //
 //
-//
-//// Change mode of self parameter --------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitChangeModeSelfRefToMut {
-//    fn method(&self);
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitChangeModeSelfRefToMut {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method(&mut self);
-//}
-//
-//
-//
-//#[cfg(cfail1)]
-//trait TraitChangeModeSelfOwnToMut: Sized {
-//    fn method(self) {}
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitChangeModeSelfOwnToMut: Sized {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method(mut self) {}
-//}
-//
-//
-//
-//#[cfg(cfail1)]
-//trait TraitChangeModeSelfOwnToRef {
-//    fn method(self);
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitChangeModeSelfOwnToRef {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method(&self);
-//}
-//
-//
-//
-//// Add unsafe modifier to method --------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddUnsafeModifier {
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddUnsafeModifier {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    unsafe fn method();
-//}
-//
-//
-//
-//// Add extern modifier to method --------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddExternModifier {
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddExternModifier {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    extern fn method();
-//}
-//
-//
-//
-//// Change extern "C" to extern "rust-intrinsic" -----------------------------------
-//#[cfg(cfail1)]
-//trait TraitChangeExternCToRustIntrinsic {
-//    extern "C" fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitChangeExternCToRustIntrinsic {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    extern "rust-intrinsic" fn method();
-//}
-//
-//
-//
-//// Add type parameter to method ---------------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddTypeParameterToMethod {
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTypeParameterToMethod {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<T>();
-//}
-//
-//
-//
-//// Add lifetime parameter to method -----------------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddLifetimeParameterToMethod {
-//    fn method();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddLifetimeParameterToMethod {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<'a>();
-//}
-//
-//
-//
-//// dummy trait for bound
-//trait ReferencedTrait0 { }
-//trait ReferencedTrait1 { }
-//
-//// Add trait bound to method type parameter ---------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddTraitBoundToMethodTypeParameter {
-//    fn method<T>();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddTraitBoundToMethodTypeParameter {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<T: ReferencedTrait0>();
-//}
-//
-//
-//
-//// Add builtin bound to method type parameter -------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddBuiltinBoundToMethodTypeParameter {
-//    fn method<T>();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddBuiltinBoundToMethodTypeParameter {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<T: Sized>();
-//}
-//
-//
-//
-//// Add lifetime bound to method lifetime parameter ------------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddLifetimeBoundToMethodLifetimeParameter {
-//    fn method<'a, 'b>(a: &'a u32, b: &'b u32);
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddLifetimeBoundToMethodLifetimeParameter {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<'a, 'b: 'a>(a: &'a u32, b: &'b u32);
-//}
-//
-//
-//
-//// Add second trait bound to method type parameter --------------------------------
-//#[cfg(cfail1)]
-//trait TraitAddSecondTraitBoundToMethodTypeParameter {
-//    fn method<T: ReferencedTrait0>();
-//}
-//
-//#[cfg(not(cfail1))]
-//#[rustc_clean(cfg="cfail2")]
-//#[rustc_clean(cfg="cfail3")]
-//#[rustc_metadata_clean(cfg="cfail2")]
-//#[rustc_metadata_clean(cfg="cfail3")]
-//trait TraitAddSecondTraitBoundToMethodTypeParameter {
-//    #[rustc_clean(cfg="cfail2")]
-//    #[rustc_clean(cfg="cfail3")]
-//    #[rustc_metadata_dirty(cfg="cfail2")]
-//    #[rustc_metadata_clean(cfg="cfail3")]
-//    fn method<T: ReferencedTrait0 + ReferencedTrait1>();
-//}
-//
-//
+
+// Change mode of self parameter --------------------------------------------------
+#[cfg(cfail1)]
+trait TraitChangeModeSelfRefToMut {
+    fn method(&self);
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitChangeModeSelfRefToMut {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method(&mut self);
+}
+
+
+
+#[cfg(cfail1)]
+trait TraitChangeModeSelfOwnToMut: Sized {
+    fn method(self) {}
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitChangeModeSelfOwnToMut: Sized {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method(mut self) {}
+}
+
+
+
+#[cfg(cfail1)]
+trait TraitChangeModeSelfOwnToRef {
+    fn method(self);
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitChangeModeSelfOwnToRef {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method(&self);
+}
+
+
+
+// Add unsafe modifier to method --------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddUnsafeModifier {
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddUnsafeModifier {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    unsafe fn method();
+}
+
+
+
+// Add extern modifier to method --------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddExternModifier {
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddExternModifier {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    extern fn method();
+}
+
+
+
+// Change extern "C" to extern "rust-intrinsic" -----------------------------------
+#[cfg(cfail1)]
+trait TraitChangeExternCToRustIntrinsic {
+    extern "C" fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitChangeExternCToRustIntrinsic {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    extern "rust-intrinsic" fn method();
+}
+
+
+
+// Add type parameter to method ---------------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddTypeParameterToMethod {
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTypeParameterToMethod {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<T>();
+}
+
+
+
+// Add lifetime parameter to method -----------------------------------------------
+#[cfg(cfail1)]
+trait TraitAddLifetimeParameterToMethod {
+    fn method();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddLifetimeParameterToMethod {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<'a>();
+}
+
+
+
+// dummy trait for bound
+trait ReferencedTrait0 { }
+trait ReferencedTrait1 { }
+
+// Add trait bound to method type parameter ---------------------------------------
+#[cfg(cfail1)]
+trait TraitAddTraitBoundToMethodTypeParameter {
+    fn method<T>();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddTraitBoundToMethodTypeParameter {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<T: ReferencedTrait0>();
+}
+
+
+
+// Add builtin bound to method type parameter -------------------------------------
+#[cfg(cfail1)]
+trait TraitAddBuiltinBoundToMethodTypeParameter {
+    fn method<T>();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddBuiltinBoundToMethodTypeParameter {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<T: Sized>();
+}
+
+
+
+// Add lifetime bound to method lifetime parameter ------------------------------------
+#[cfg(cfail1)]
+trait TraitAddLifetimeBoundToMethodLifetimeParameter {
+    fn method<'a, 'b>(a: &'a u32, b: &'b u32);
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddLifetimeBoundToMethodLifetimeParameter {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<'a, 'b: 'a>(a: &'a u32, b: &'b u32);
+}
+
+
+
+// Add second trait bound to method type parameter --------------------------------
+#[cfg(cfail1)]
+trait TraitAddSecondTraitBoundToMethodTypeParameter {
+    fn method<T: ReferencedTrait0>();
+}
+
+#[cfg(not(cfail1))]
+#[rustc_clean(cfg="cfail2")]
+#[rustc_clean(cfg="cfail3")]
+#[rustc_metadata_clean(cfg="cfail2")]
+#[rustc_metadata_clean(cfg="cfail3")]
+trait TraitAddSecondTraitBoundToMethodTypeParameter {
+    #[rustc_clean(cfg="cfail2")]
+    #[rustc_clean(cfg="cfail3")]
+    #[rustc_metadata_dirty(cfg="cfail2")]
+    #[rustc_metadata_clean(cfg="cfail3")]
+    fn method<T: ReferencedTrait0 + ReferencedTrait1>();
+}
+
+
 
 // Add second builtin bound to method type parameter ------------------------------
 #[cfg(cfail1)]
